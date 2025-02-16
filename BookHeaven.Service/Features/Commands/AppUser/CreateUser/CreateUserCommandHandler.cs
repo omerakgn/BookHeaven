@@ -47,7 +47,7 @@ namespace BookHeaven.Service.Features.Commands.AppUser.CreateUser
                 return new()
                 {
                     Success= true,
-                    Message = "Kullanıcı başarıyla oluşturulmuştur.",
+                    Message = "Kaydınız başarıyla oluşturulmuştur. Devam etmek için giriş yapabilirsiniz",
                 };
 
             }

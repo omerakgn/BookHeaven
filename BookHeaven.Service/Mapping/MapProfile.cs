@@ -15,6 +15,7 @@ namespace BookHeaven.Service.Mapping
             CreateMap<Person, PersonDto>().ReverseMap();
             CreateMap<Core.Models.File, FileDto>().ReverseMap();
             CreateMap<ProductImage, ProductImageDto>().ReverseMap();
+            CreateMap<Core.Models.Identity.AppUser, AppUserDto>().ReverseMap();
             CreateMap<CreateUserCommandRequest, Core.Models.Identity.AppUser>()
              .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email)) 
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))

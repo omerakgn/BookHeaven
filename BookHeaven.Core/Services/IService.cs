@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BookHeaven.Core.Services
 {
-    public interface IService<T> where T : BaseEntity
+    public interface IService<T> where T : class
     {
        
         Task<T> GetByIdAsync(int id);

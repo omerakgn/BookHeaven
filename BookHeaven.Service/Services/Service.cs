@@ -6,6 +6,7 @@ using BookHeaven.Core.UnitOfWorks;
 using BookHeaven.Repository;
 using BookHeaven.Service.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace BookHeaven.Service.Services
 {
-    public class Service<T> : IService<T> where T : BaseEntity
+    public class Service<T> : IService<T> where T : class 
     {
         private readonly IGenericRepository<T> _repository;
         public readonly IUnitOfWork _unitOfWork;
