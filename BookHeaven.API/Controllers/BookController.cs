@@ -59,6 +59,7 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             GetAllProductQueryResponse response = await _mediator.Send(new GetAllProductQueryRequest());
@@ -71,6 +72,7 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var response = await _mediator.Send(new GetByIdProductQueryRequest() {BookId = id });
@@ -83,7 +85,8 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = "Admin")]
+        [Authorize]
+        [Authorize(Policy = "isAdmin")]
         public async Task<IActionResult> Add(BookDto bookDto)
         {
 
@@ -99,7 +102,8 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(AuthenticationSchemes = "Admin")]
+        [Authorize]
+        [Authorize(Policy = "isAdmin")]
         public async Task<IActionResult> Update(BookDto bookdto)
         {
             var response = await _mediator.Send(new UpdateProductCommandRequest { bookDto = bookdto });
@@ -115,7 +119,8 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = "Admin")]
+        [Authorize]
+        [Authorize(Policy ="isAdmin")]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _mediator.Send(new DeleteProductCommandRequest() { Id = id });
@@ -127,10 +132,9 @@ namespace BookHeaven.API.Controllers
             return BadRequest();
 
 
-
         }
         [HttpPost("[action]")]
-        [Authorize(AuthenticationSchemes = "Admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> Upload([FromForm] int id)
         {
 
@@ -152,6 +156,7 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpGet("[action]/{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProductImages(int id)
         {
 
@@ -170,7 +175,8 @@ namespace BookHeaven.API.Controllers
 
 
         [HttpDelete("[action]/{id}/{imageId}")]
-       
+        [Authorize]
+        [Authorize(Policy = "isAdmin")]
         public async Task<IActionResult> DeleteProductImage(int id,int imageId)
         {
 
@@ -185,12 +191,14 @@ namespace BookHeaven.API.Controllers
         }
 
         [HttpGet("[action]")]
-       
+        [Authorize]
+        [Authorize(Policy = "isAdmin")]
         public async Task<IActionResult> ChangeShowcaseImage([FromQuery] ChangeShowCaseImageCommandRequest changeShowCaseImageCommandRequest)
         {
             ChangeShowCaseImageCommandResponse response = await _mediator.Send(changeShowCaseImageCommandRequest);
             return Ok(response);
         }
+
 
 
     }

@@ -12,6 +12,7 @@ namespace BookHeaven.Core.Models.Identity
         
         public string Name { get; set; }
         public string Surname {  get; set; }
+        public string Role { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenEndDate { get; set; }
    

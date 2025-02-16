@@ -19,15 +19,14 @@ namespace BookHeaven.Repository
         public DbSet<Core.Models.File> Files { get; set; }
         public DbSet<ProductImage> ProductImageFiles { get; set; }
         public DbSet<InvoiceFile> InvoiceFiles { get; set; }
-
-
-
+        public DbSet<Comment> Comments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BookConfigurations());
             modelBuilder.ApplyConfiguration(new CategoriConfigurations());
             modelBuilder.ApplyConfiguration(new GroupConfigurations());
             modelBuilder.ApplyConfiguration(new PersonConfigurations());
+            modelBuilder.ApplyConfiguration(new CommentConfigurations());
             base.OnModelCreating(modelBuilder);
         }
 
@@ -54,6 +53,9 @@ namespace BookHeaven.Repository
 
                 
             }
+
+            return base.SaveChangesAsync(cancellationToken);
+            
             /* var datas = ChangeTracker.Entries<BaseEntity>();
 
              foreach (var data in datas) 
@@ -69,7 +71,7 @@ namespace BookHeaven.Repository
              }
             */
 
-            return base.SaveChangesAsync(cancellationToken);
+
         }
 
 

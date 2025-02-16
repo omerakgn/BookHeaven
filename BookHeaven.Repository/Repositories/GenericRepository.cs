@@ -16,8 +16,6 @@ namespace BookHeaven.Repository.Repositories
 
         private readonly DbSet<T> _dbSet;
 
-       
-
         public GenericRepository(AppDbContext context)
         {
             _context = context;

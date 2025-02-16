@@ -13,7 +13,7 @@ namespace BookHeaven.Core.Models
         public double Price { get; set; }
         public string StockCode { get; set; }
         public string Manufacturer { get; set; }
-        public ICollection<Categori> Categories { get; set; }
-        public ICollection<ProductImage> ProductImages { get; set; }
+        public ICollection<Comment> Comments { get; set; }
+        public ICollection<ProductImage>? ProductImages { get; set; }
     }
 }

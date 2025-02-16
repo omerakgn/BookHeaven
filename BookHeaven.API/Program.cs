@@ -39,6 +39,9 @@ using BookHeaven.API.Configurations.UsernameEnricher;
 using Microsoft.AspNetCore.HttpLogging;
 using System.Data;
 using BookHeaven.API.Extensions;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +52,13 @@ builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>
     .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
     .AddNewtonsoftJson();
 
+builder.Services.AddControllers()
+               .AddNewtonsoftJson(options =>
+               {
+                   // Use the default property (Pascal) casing
+                   options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                   options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+               });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -114,24 +124,61 @@ builder.Services.AddDbContext<AppDbContext>(x =>
     containerBuilder.RegisterModule(new RepoServiceModule()));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer("Admin" , options =>
+    .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new()
+       
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
 
-            ValidAudience = builder.Configuration["Token:Audience"],
-            ValidIssuer = builder.Configuration["Token:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
-            LifetimeValidator = ( notBefore,  expires,  securityToken, validationParameters) => expires!= null ? expires > DateTime.UtcNow : false,
-            
-            NameClaimType= ClaimTypes.Name
-        
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+          //  LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+
+          //  NameClaimType = ClaimTypes.Name,
+          //  RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        };
+
+        // Eventleri buraya ekliyoruz.
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                // Authentication baþarýsýzsa, hata mesajýný logluyoruz.
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                // Token doðrulandýysa, kullanýcý adýný logluyoruz.
+                Console.WriteLine($"Token validated for user: {context.Principal.Identity.Name}");
+                return Task.CompletedTask;
+            }
         };
     });
+builder.Services.Configure<AuthenticationOptions>(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("isAdmin", policy => policy
+    .RequireAssertion
+    (context =>
+    {
+        return context.User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+    }
+    ));
+
+});
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Host.UseSerilog((context, services, configuration) =>
@@ -174,6 +221,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.ConfiguraExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
 

@@ -28,21 +28,24 @@ namespace BookHeaven.Service.Services.Token
         {
             TokenDto token = new();
             
-            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_configuration["Token:SecurityKey"]));
+            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
             SigningCredentials signingCredentials = new(securityKey,SecurityAlgorithms.HmacSha256);
             
             token.Expiration = DateTime.UtcNow.AddMinutes(minute);
 
             JwtSecurityToken securityToken = new(
-                audience: _configuration["Token:Audience"],
-                issuer: _configuration["Token:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                issuer: _configuration["Jwt:Issuer"],
                 expires: token.Expiration,
-                notBefore: DateTime.UtcNow,
                 signingCredentials: signingCredentials,
-                claims: new List<Claim> {new (ClaimTypes.Name, user.UserName)}
+                 claims: new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.UserName),
+                        new Claim(ClaimTypes.Role, user.Role)
+                    }
 
-                );
+                );  
 
             JwtSecurityTokenHandler tokenHandler = new();
             token.AccessToken = tokenHandler.WriteToken(securityToken);

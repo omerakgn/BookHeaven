@@ -36,6 +36,7 @@ namespace BookHeaven.Service.Features.Commands.AppUser.CreateUser
                 Surname = request.Surname,
                 Email = request.Email,
                 UserName = request.Email,
+                Role = "User"
             }, request.Password);
 
             

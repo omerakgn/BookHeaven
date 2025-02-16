@@ -37,7 +37,7 @@ namespace BookHeaven.Service.Features.Commands.AppUser.LoginUser
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
-            var token = await _authService.LoginAsync(request.Email, request.Password, 9);
+            var token = await _authService.LoginAsync(request.Email, request.Password, 20);
             return new LoginUserSuccessCommandResponse()
             {
                 tokendto = token

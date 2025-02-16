@@ -4,6 +4,7 @@ using BookHeaven.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookHeaven.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250122091516_migration15")]
+    partial class migration15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +38,7 @@ namespace BookHeaven.Repository.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(MAX)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
@@ -68,6 +71,9 @@ namespace BookHeaven.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime");
 
@@ -80,39 +86,9 @@ namespace BookHeaven.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
-                });
-
-            modelBuilder.Entity("BookHeaven.Core.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime?>("CreateDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("BookId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("BookHeaven.Core.Models.File", b =>
@@ -254,10 +230,6 @@ namespace BookHeaven.Repository.Migrations
 
                     b.Property<DateTime?>("RefreshTokenEndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -450,15 +422,11 @@ namespace BookHeaven.Repository.Migrations
                     b.HasDiscriminator().HasValue("ProductImage");
                 });
 
-            modelBuilder.Entity("BookHeaven.Core.Models.Comment", b =>
+            modelBuilder.Entity("BookHeaven.Core.Models.Categori", b =>
                 {
-                    b.HasOne("BookHeaven.Core.Models.Book", "Book")
-                        .WithMany("Comments")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
+                    b.HasOne("BookHeaven.Core.Models.Book", null)
+                        .WithMany("Categories")
+                        .HasForeignKey("BookId");
                 });
 
             modelBuilder.Entity("BookHeaven.Core.Models.Group", b =>
@@ -536,7 +504,7 @@ namespace BookHeaven.Repository.Migrations
 
             modelBuilder.Entity("BookHeaven.Core.Models.Book", b =>
                 {
-                    b.Navigation("Comments");
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("BookHeaven.Core.Models.Person", b =>

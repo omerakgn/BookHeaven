@@ -14,6 +14,8 @@ namespace BookHeaven.Core.DTOs
         public double Price { get; set; }
         public string StockCode { get; set; }
         public string Manufacturer { get; set; }
+        public ICollection<ProductImage>? ProductImages { get; set; }
+
         //public ICollection<CategoriDto> Categories { get; set; }
     }
 }
